@@ -6,3 +6,33 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id String @id @default(uuid())
+
+  name     String @map("user_name")
+  email    String @unique @map("user_email")
+  password String @map("user_password")
+
+  notes Note[] @relation("movie_reviews")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Note {
+  id String @id @default(uuid())
+
+  title   String @map("note_title")
+  content String @map("note_content")
+
+  user   User   @relation("movie_reviews", fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("notes")
+}
