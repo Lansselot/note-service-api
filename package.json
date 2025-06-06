@@ -14,10 +14,14 @@
   "author": "lansselot <pozharov2003@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "express": "^5.1.0"
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.1"
   },
   "devDependencies": {
     "@prisma/client": "^6.9.0",
+    "@types/cors": "^2.8.18",
     "@types/express": "^5.0.2",
     "@types/node": "^22.15.29",
     "prisma": "^6.9.0",
