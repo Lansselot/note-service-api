@@ -33,6 +33,25 @@ export class NoteController {
     }
   }
 
+  async getAllNotesByUserId(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.params.userId;
+      console.log(userId);
+      const user = await userService.getUserById(userId);
+
+      if (!user) {
+        res.status(404).json({ message: 'user not found' });
+        return;
+      }
+
+      const notes = await noteService.getAllNotesByUserId(userId);
+
+      res.json(notes);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to get note' });
+    }
+  }
+
   async getNoteById(req: Request, res: Response): Promise<void> {
     try {
       const id = req.params.id;

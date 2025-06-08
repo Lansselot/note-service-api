@@ -22,6 +22,12 @@ export class NoteService {
     });
   }
 
+  async getAllNotesByUserId(userId: string): Promise<Note[] | null> {
+    return prisma.note.findMany({
+      where: { userId },
+    });
+  }
+
   async updateNoteById(id: string, data: Partial<Note>): Promise<Note | null> {
     return prisma.note.update({
       where: { id },

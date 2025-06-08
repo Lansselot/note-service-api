@@ -4,6 +4,7 @@ import {
   createNoteValidator,
   noteIdValidator,
   updateNoteValidator,
+  userIdNoteValidator,
 } from '../validators/note.validator';
 import { validate } from '../middleware/validate';
 
@@ -12,6 +13,12 @@ const noteController = new NoteController();
 
 router.post('/', createNoteValidator, validate, noteController.createNote);
 router.get('/', noteController.getAllNotes);
+router.get(
+  '/user/:userId',
+  userIdNoteValidator,
+  validate,
+  noteController.getAllNotesByUserId
+);
 router.get('/:id', noteIdValidator, validate, noteController.getNoteById);
 router.put(
   '/:id',
