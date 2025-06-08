@@ -1,17 +1,20 @@
 import express, { Express } from 'express';
 import cors from 'cors';
-import bodyParser from 'body-parser';
+import userRoutes from './routes/user.router';
+import noteRoutes from './routes/note.router';
 
 const app: Express = express();
 
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.status(200).json({ message: 'success' });
+app.use('/api/users', userRoutes);
+app.use('/api/notes', noteRoutes);
+
+app.use('/', (req, res) => {
+  res.status(404).json({ message: 'Not found' });
 });
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
