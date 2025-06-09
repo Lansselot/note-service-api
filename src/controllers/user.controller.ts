@@ -2,26 +2,6 @@ import { Request, Response } from 'express';
 import { userService } from '../services';
 
 export class UserController {
-  async createUser(req: Request, res: Response): Promise<void> {
-    try {
-      const { name, email, password } = req.body;
-
-      const existingUser = await userService.getUserByEmail(email);
-
-      if (existingUser) {
-        res
-          .status(409)
-          .json({ message: 'User with this email already exists' });
-        return;
-      }
-
-      const newUser = await userService.createUser({ name, email, password });
-      res.status(201).json(newUser);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to create user' });
-    }
-  }
-
   async getAllUsers(req: Request, res: Response): Promise<void> {
     try {
       const users = await userService.getAllUsers();

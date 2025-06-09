@@ -9,7 +9,6 @@ import { userController } from '../controllers';
 
 const router = Router();
 
-router.post('/', createUserValidator, validate, userController.createUser);
 router.get('/', userController.getAllUsers);
 router.get('/:id', userIdValidator, validate, userController.getUserById);
 router.put(
