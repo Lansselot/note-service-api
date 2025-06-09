@@ -3,27 +3,34 @@ import {
   createNoteValidator,
   noteIdValidator,
   updateNoteValidator,
-  userIdNoteValidator,
 } from '../validators/note.validator';
 import { validate } from '../middleware/validate';
 import { noteController } from '../controllers';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
-router.post('/', createNoteValidator, validate, noteController.createNote);
-router.get('/', noteController.getAllNotes);
-router.get(
-  '/user/:userId',
-  userIdNoteValidator,
+router.post(
+  '/',
+  createNoteValidator,
   validate,
-  noteController.getAllNotesByUserId
+  authenticate,
+  noteController.createNote
 );
-router.get('/:id', noteIdValidator, validate, noteController.getNoteById);
+router.get('/', authenticate, noteController.getAllNotesByUserId);
+router.get(
+  '/:id',
+  noteIdValidator,
+  validate,
+  authenticate,
+  noteController.getNoteById
+);
 router.put(
   '/:id',
   createNoteValidator,
   noteIdValidator,
   validate,
+  authenticate,
   noteController.updateNote
 );
 router.patch(
@@ -31,8 +38,15 @@ router.patch(
   updateNoteValidator,
   noteIdValidator,
   validate,
+  authenticate,
   noteController.updateNote
 );
-router.delete('/:id', noteIdValidator, validate, noteController.deleteNote);
+router.delete(
+  '/:id',
+  noteIdValidator,
+  validate,
+  authenticate,
+  noteController.deleteNote
+);
 
 export default router;

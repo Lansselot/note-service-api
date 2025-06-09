@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { userService } from '../services';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import type { AppJwtPayload } from '../types/jwt';
 
 export class AuthController {
   async register(req: Request, res: Response): Promise<void> {
@@ -50,11 +51,11 @@ export class AuthController {
         return;
       }
 
-      const token = jwt.sign(
-        { userId: user.id },
-        process.env.JWT_SECRET as string,
-        { expiresIn: '1d' }
-      );
+      const payload: AppJwtPayload = { userId: user.id };
+
+      const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
+        expiresIn: '1d',
+      });
 
       res.json({
         token,

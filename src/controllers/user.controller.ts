@@ -1,23 +1,15 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { userService } from '../services';
+import { AuthRequest } from '../types/auth';
 
 export class UserController {
-  async getAllUsers(req: Request, res: Response): Promise<void> {
+  async getUserById(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const users = await userService.getAllUsers();
-      res.json(users);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to get users' });
-    }
-  }
-
-  async getUserById(req: Request, res: Response): Promise<void> {
-    try {
-      const id = req.params.id;
-      const user = await userService.getUserById(id);
+      const tokenUserId = req.userId!;
+      const user = await userService.getUserById(tokenUserId);
 
       if (!user) {
-        res.status(404).json({ message: 'User not found' });
+        res.status(404).json({ message: 'Invalid token' });
         return;
       }
 
@@ -27,37 +19,37 @@ export class UserController {
     }
   }
 
-  async updateUser(req: Request, res: Response): Promise<void> {
+  async updateUser(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const id = req.params.id;
+      const tokenUserId = req.userId!;
       const data = req.body;
 
-      const user = await userService.getUserById(id);
+      const user = await userService.getUserById(tokenUserId);
 
       if (!user) {
-        res.status(404).json({ message: 'User not found' });
+        res.status(404).json({ message: 'Invalid token' });
         return;
       }
 
-      const updatedUser = await userService.updateUserById(id, data);
+      const updatedUser = await userService.updateUserById(tokenUserId, data);
       res.json(updatedUser);
     } catch (error) {
       res.status(500).json({ message: 'Failed to update user' });
     }
   }
 
-  async deleteUser(req: Request, res: Response): Promise<void> {
+  async deleteUser(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const id = req.params.id;
+      const tokenUserId = req.userId!;
 
-      const user = await userService.getUserById(id);
+      const user = await userService.getUserById(tokenUserId);
 
       if (!user) {
-        res.status(404).json({ message: 'User not found' });
+        res.status(404).json({ message: 'Invalid token' });
         return;
       }
 
-      await userService.deleteUser(id);
+      await userService.deleteUser(tokenUserId);
       res.sendStatus(204);
     } catch (error) {
       res.status(500).json({ message: 'Failed to delete user' });

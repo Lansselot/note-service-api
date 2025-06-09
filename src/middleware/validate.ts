@@ -1,10 +1,10 @@
-import express from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
 
 export const validate = (
-  req: express.Request,
-  res: express.Response,
-  next: express.NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ): void => {
   const result = validationResult(req);
   //console.log(result);

@@ -1,45 +1,42 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { userService, noteService } from '../services';
+import { AuthRequest } from '../types/auth';
 
 export class NoteController {
-  async createNote(req: Request, res: Response): Promise<void> {
+  async createNote(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const { title, content, userId } = req.body;
+      const { title, content } = req.body;
+      const tokenUserId = req.userId!;
 
-      const user = await userService.getUserById(userId);
+      const user = await userService.getUserById(tokenUserId);
 
       if (!user) {
-        res.status(404).json({ message: 'userId must be valid' });
+        res.status(404).json({ message: 'Invalid token ' });
         return;
       }
 
-      const newNote = await noteService.createNote({ title, content, userId });
+      const newNote = await noteService.createNote({
+        title,
+        content,
+        userId: tokenUserId,
+      });
       res.status(201).json(newNote);
     } catch (error) {
       res.status(500).json({ message: 'Failed to create note' });
     }
   }
 
-  async getAllNotes(req: Request, res: Response): Promise<void> {
+  async getAllNotesByUserId(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const notes = await noteService.getAllNotes();
-      res.json(notes);
-    } catch (error) {
-      res.status(500).json({ message: 'Failed to get notes' });
-    }
-  }
-
-  async getAllNotesByUserId(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = req.params.userId;
-      const user = await userService.getUserById(userId);
+      const tokenUserId = req.userId!;
+      const user = await userService.getUserById(tokenUserId);
 
       if (!user) {
-        res.status(404).json({ message: 'user not found' });
+        res.status(404).json({ message: 'Invalid token' });
         return;
       }
 
-      const notes = await noteService.getAllNotesByUserId(userId);
+      const notes = await noteService.getAllNotesByUserId(tokenUserId);
 
       res.json(notes);
     } catch (error) {
@@ -47,13 +44,19 @@ export class NoteController {
     }
   }
 
-  async getNoteById(req: Request, res: Response): Promise<void> {
+  async getNoteById(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const id = req.params.id;
-      const note = await noteService.getNoteById(id);
+      const noteId = req.params.id;
+      const note = await noteService.getNoteById(noteId);
+      const tokenUserId = req.userId!;
 
       if (!note) {
         res.status(404).json({ message: 'Note not found' });
+        return;
+      }
+
+      if (note.userId !== tokenUserId) {
+        res.status(403).json({ message: 'You do not have permission' });
         return;
       }
 
@@ -63,37 +66,47 @@ export class NoteController {
     }
   }
 
-  async updateNote(req: Request, res: Response): Promise<void> {
+  async updateNote(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const id = req.params.id;
+      const noteId = req.params.id;
+      const note = await noteService.getNoteById(noteId);
       const data = req.body;
-
-      const note = await noteService.getNoteById(id);
+      const tokenUserId = req.userId!;
 
       if (!note) {
         res.status(404).json({ message: 'Note not found' });
         return;
       }
 
-      const updatedNote = await noteService.updateNoteById(id, data);
+      if (note.userId !== tokenUserId) {
+        res.status(403).json({ message: 'You do not have permission' });
+        return;
+      }
+
+      const updatedNote = await noteService.updateNoteById(noteId, data);
       res.json(updatedNote);
     } catch (error) {
       res.status(500).json({ message: 'Failed to update note' });
     }
   }
 
-  async deleteNote(req: Request, res: Response): Promise<void> {
+  async deleteNote(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const id = req.params.id;
-
-      const note = await noteService.getNoteById(id);
+      const noteId = req.params.id;
+      const note = await noteService.getNoteById(noteId);
+      const tokenUserId = req.userId!;
 
       if (!note) {
         res.status(404).json({ message: 'Note not found' });
         return;
       }
 
-      await noteService.deleteNote(id);
+      if (note.userId !== tokenUserId) {
+        res.status(403).json({ message: 'You do not have permission' });
+        return;
+      }
+
+      await noteService.deleteNote(noteId);
       res.sendStatus(204);
     } catch (error) {
       res.status(500).json({ message: 'Failed to delete note' });

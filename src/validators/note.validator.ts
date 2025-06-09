@@ -11,7 +11,6 @@ export const createNoteValidator = [
     .withMessage('content must be string.')
     .isLength({ max: 300 })
     .withMessage('content must be no more than 300 characters long.'),
-  body('userId').isUUID().withMessage('userId must be UUID'),
 ];
 
 export const noteIdValidator = [
@@ -31,9 +30,4 @@ export const updateNoteValidator = [
     .withMessage('content must be string.')
     .isLength({ max: 300 })
     .withMessage('content must be no more than 300 characters long.'),
-  body('userId').optional().isUUID().withMessage('userId must be UUID'),
-];
-
-export const userIdNoteValidator = [
-  param('userId').isUUID().withMessage('userId must be valid'),
 ];

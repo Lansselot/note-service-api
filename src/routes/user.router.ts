@@ -6,25 +6,25 @@ import {
 } from '../validators/user.validator';
 import { validate } from '../middleware/validate';
 import { userController } from '../controllers';
+import { authenticate } from '../middleware/auth';
 
 const router = Router();
 
-router.get('/', userController.getAllUsers);
-router.get('/:id', userIdValidator, validate, userController.getUserById);
+router.get('/', authenticate, userController.getUserById);
 router.put(
-  '/:id',
-  userIdValidator,
+  '/',
   createUserValidator,
   validate,
+  authenticate,
   userController.updateUser
 );
 router.patch(
-  '/:id',
-  userIdValidator,
+  '/',
   updateUserValidator,
   validate,
+  authenticate,
   userController.updateUser
 );
-router.delete('/:id', userIdValidator, validate, userController.deleteUser);
+router.delete('/', authenticate, userController.deleteUser);
 
 export default router;
