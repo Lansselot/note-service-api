@@ -1,9 +1,5 @@
 import { Request, Response } from 'express';
-import { NoteService } from '../services/note.service';
-import { UserService } from '../services/user.service';
-
-const noteService = new NoteService();
-const userService = new UserService();
+import { userService, noteService } from '../services';
 
 export class NoteController {
   async createNote(req: Request, res: Response): Promise<void> {
@@ -36,7 +32,6 @@ export class NoteController {
   async getAllNotesByUserId(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.params.userId;
-      console.log(userId);
       const user = await userService.getUserById(userId);
 
       if (!user) {

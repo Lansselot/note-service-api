@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { NoteController } from '../controllers/note.controller';
 import {
   createNoteValidator,
   noteIdValidator,
@@ -7,9 +6,9 @@ import {
   userIdNoteValidator,
 } from '../validators/note.validator';
 import { validate } from '../middleware/validate';
+import { noteController } from '../controllers';
 
 const router = Router();
-const noteController = new NoteController();
 
 router.post('/', createNoteValidator, validate, noteController.createNote);
 router.get('/', noteController.getAllNotes);

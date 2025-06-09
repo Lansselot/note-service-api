@@ -5,10 +5,9 @@ import {
   updateUserValidator,
 } from '../validators/user.validator';
 import { validate } from '../middleware/validate';
-import { UserController } from '../controllers/user.controller';
+import { userController } from '../controllers';
 
 const router = Router();
-const userController = new UserController();
 
 router.post('/', createUserValidator, validate, userController.createUser);
 router.get('/', userController.getAllUsers);

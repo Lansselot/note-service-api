@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
-import { UserService } from '../services/user.service';
-
-const userService = new UserService();
+import { userService } from '../services';
 
 export class UserController {
   async createUser(req: Request, res: Response): Promise<void> {
