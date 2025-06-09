@@ -1,10 +1,11 @@
 import express, { Express } from 'express';
-import { noteRoutes, userRoutes } from './routes';
+import { authRoutes, noteRoutes, userRoutes } from './routes';
 
 const app: Express = express();
 
 app.use(express.json());
 
+app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/notes', noteRoutes);
 
