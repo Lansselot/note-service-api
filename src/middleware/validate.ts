@@ -6,12 +6,12 @@ export const validate = (
   res: Response,
   next: NextFunction
 ): void => {
-  const result = validationResult(req);
-  //console.log(result);
+  const errors = validationResult(req);
 
-  if (!result.isEmpty()) {
-    res.status(400).json(result);
+  if (!errors.isEmpty()) {
+    res.status(400).json(errors);
     return;
   }
+
   next();
 };

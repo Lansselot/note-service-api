@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import {
   createUserValidator,
-  userIdValidator,
   updateUserValidator,
 } from '../validators/user.validator';
 import { validate } from '../middleware/validate';

@@ -14,7 +14,7 @@ model User {
   email    String @unique @map("user_email")
   password String @map("user_password")
 
-  notes Note[] @relation("movie_reviews")
+  notes Note[] @relation("user_notes")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -28,7 +28,7 @@ model Note {
   title   String @map("note_title")
   content String @map("note_content")
 
-  user   User   @relation("movie_reviews", fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation("user_notes", fields: [userId], references: [id], onDelete: Cascade)
   userId String @map("user_id")
 
   createdAt DateTime @default(now()) @map("created_at")

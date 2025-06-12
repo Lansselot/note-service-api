@@ -9,7 +9,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/notes', noteRoutes);
 
-app.use('/', (req, res) => {
+app.use('/', (_, res) => {
   res.status(404).json({ message: 'Not found' });
 });
 
