@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { AppJwtPayload } from '../types/jwt';
-import { AuthRequest } from '../types/auth';
+import Boom from '@hapi/boom';
 
 function getTokenFromHeader(req: Request) {
   if (
@@ -16,14 +16,14 @@ function getTokenFromHeader(req: Request) {
   return null;
 }
 
-export const authenticate = (
-  req: AuthRequest,
+export function authenticate(
+  req: Request,
   res: Response,
   next: NextFunction
-): void => {
+): void {
   const token = getTokenFromHeader(req);
   if (!token) {
-    res.status(401).json({ message: 'Invalid token' });
+    next(Boom.unauthorized('Invalid token'));
     return;
   }
 
@@ -33,9 +33,11 @@ export const authenticate = (
       process.env.JWT_SECRET as string
     ) as AppJwtPayload;
 
-    req.userId = decoted.userId;
+    if (!req.user) req.user = {} as AppJwtPayload;
+    req.user!.userId = decoted.userId;
+
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Invalid token' });
+    next(Boom.unauthorized('Invalid token'));
   }
-};
+}

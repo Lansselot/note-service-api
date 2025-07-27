@@ -1,12 +1,11 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { userService, noteService } from '../services';
-import { AuthRequest } from '../types/auth';
 
 export class NoteController {
-  async createNote(req: AuthRequest, res: Response): Promise<void> {
+  async createNote(req: Request, res: Response): Promise<void> {
     try {
       const { title, content } = req.body;
-      const tokenUserId = req.userId!;
+      const tokenUserId = req.user!.userId;
 
       const user = await userService.getUserById(tokenUserId);
 
@@ -26,9 +25,9 @@ export class NoteController {
     }
   }
 
-  async getAllNotesByUserId(req: AuthRequest, res: Response): Promise<void> {
+  async getAllNotesByUserId(req: Request, res: Response): Promise<void> {
     try {
-      const tokenUserId = req.userId!;
+      const tokenUserId = req.user!.userId;
       const user = await userService.getUserById(tokenUserId);
 
       if (!user) {
@@ -44,11 +43,11 @@ export class NoteController {
     }
   }
 
-  async getNoteById(req: AuthRequest, res: Response): Promise<void> {
+  async getNoteById(req: Request, res: Response): Promise<void> {
     try {
       const noteId = req.params.id;
       const note = await noteService.getNoteById(noteId);
-      const tokenUserId = req.userId!;
+      const tokenUserId = req.user!.userId;
 
       if (!note) {
         res.status(404).json({ message: 'Note not found' });
@@ -66,12 +65,12 @@ export class NoteController {
     }
   }
 
-  async updateNote(req: AuthRequest, res: Response): Promise<void> {
+  async updateNote(req: Request, res: Response): Promise<void> {
     try {
       const noteId = req.params.id;
       const note = await noteService.getNoteById(noteId);
       const data = req.body;
-      const tokenUserId = req.userId!;
+      const tokenUserId = req.user!.userId;
 
       if (!note) {
         res.status(404).json({ message: 'Note not found' });
@@ -90,11 +89,11 @@ export class NoteController {
     }
   }
 
-  async deleteNote(req: AuthRequest, res: Response): Promise<void> {
+  async deleteNote(req: Request, res: Response): Promise<void> {
     try {
       const noteId = req.params.id;
       const note = await noteService.getNoteById(noteId);
-      const tokenUserId = req.userId!;
+      const tokenUserId = req.user!.userId;
 
       if (!note) {
         res.status(404).json({ message: 'Note not found' });

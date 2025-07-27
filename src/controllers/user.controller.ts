@@ -1,11 +1,10 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { userService } from '../services';
-import { AuthRequest } from '../types/auth';
 
 export class UserController {
-  async getUserById(req: AuthRequest, res: Response): Promise<void> {
+  async getUserById(req: Request, res: Response): Promise<void> {
     try {
-      const tokenUserId = req.userId!;
+      const tokenUserId = req.user!.userId;
       const user = await userService.getUserById(tokenUserId);
 
       if (!user) {
@@ -19,9 +18,9 @@ export class UserController {
     }
   }
 
-  async updateUser(req: AuthRequest, res: Response): Promise<void> {
+  async updateUser(req: Request, res: Response): Promise<void> {
     try {
-      const tokenUserId = req.userId!;
+      const tokenUserId = req.user!.userId;
       const data = req.body;
 
       const user = await userService.getUserById(tokenUserId);
@@ -38,9 +37,9 @@ export class UserController {
     }
   }
 
-  async deleteUser(req: AuthRequest, res: Response): Promise<void> {
+  async deleteUser(req: Request, res: Response): Promise<void> {
     try {
-      const tokenUserId = req.userId!;
+      const tokenUserId = req.user!.userId;
 
       const user = await userService.getUserById(tokenUserId);
 
