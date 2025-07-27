@@ -1,11 +1,15 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { userService } from '../services';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import type { AppJwtPayload } from '../types/jwt';
 
 export class AuthController {
-  async register(req: Request, res: Response): Promise<void> {
+  async register(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { name, email, password } = req.body;
 
@@ -29,11 +33,11 @@ export class AuthController {
         .status(201)
         .json({ id: newUser.id, name: newUser.name, email: newUser.email });
     } catch (error) {
-      res.status(500).json({ message: 'Registration failed' });
+      next(error);
     }
   }
 
-  async login(req: Request, res: Response): Promise<void> {
+  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { email, password } = req.body;
 
@@ -62,7 +66,7 @@ export class AuthController {
         user: { id: user.id, name: user.name, email: user.email },
       });
     } catch (error) {
-      res.status(500).json({ message: 'Login failed' });
+      next(error);
     }
   }
 }

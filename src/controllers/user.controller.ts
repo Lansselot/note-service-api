@@ -1,8 +1,12 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { userService } from '../services';
 
 export class UserController {
-  async getUserById(req: Request, res: Response): Promise<void> {
+  async getUserById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const tokenUserId = req.user!.userId;
       const user = await userService.getUserById(tokenUserId);
@@ -14,11 +18,15 @@ export class UserController {
 
       res.json(user);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to get user' });
+      next(error);
     }
   }
 
-  async updateUser(req: Request, res: Response): Promise<void> {
+  async updateUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const tokenUserId = req.user!.userId;
       const data = req.body;
@@ -33,11 +41,15 @@ export class UserController {
       const updatedUser = await userService.updateUserById(tokenUserId, data);
       res.json(updatedUser);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to update user' });
+      next(error);
     }
   }
 
-  async deleteUser(req: Request, res: Response): Promise<void> {
+  async deleteUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const tokenUserId = req.user!.userId;
 
@@ -51,7 +63,7 @@ export class UserController {
       await userService.deleteUser(tokenUserId);
       res.sendStatus(204);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to delete user' });
+      next(error);
     }
   }
 }

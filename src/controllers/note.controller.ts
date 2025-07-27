@@ -1,8 +1,12 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { userService, noteService } from '../services';
 
 export class NoteController {
-  async createNote(req: Request, res: Response): Promise<void> {
+  async createNote(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { title, content } = req.body;
       const tokenUserId = req.user!.userId;
@@ -21,11 +25,15 @@ export class NoteController {
       });
       res.status(201).json(newNote);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to create note' });
+      next(error);
     }
   }
 
-  async getAllNotesByUserId(req: Request, res: Response): Promise<void> {
+  async getAllNotesByUserId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const tokenUserId = req.user!.userId;
       const user = await userService.getUserById(tokenUserId);
@@ -39,11 +47,15 @@ export class NoteController {
 
       res.json(notes);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to get note' });
+      next(error);
     }
   }
 
-  async getNoteById(req: Request, res: Response): Promise<void> {
+  async getNoteById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const noteId = req.params.id;
       const note = await noteService.getNoteById(noteId);
@@ -61,11 +73,15 @@ export class NoteController {
 
       res.json(note);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to get note' });
+      next(error);
     }
   }
 
-  async updateNote(req: Request, res: Response): Promise<void> {
+  async updateNote(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const noteId = req.params.id;
       const note = await noteService.getNoteById(noteId);
@@ -85,11 +101,15 @@ export class NoteController {
       const updatedNote = await noteService.updateNoteById(noteId, data);
       res.json(updatedNote);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to update note' });
+      next(error);
     }
   }
 
-  async deleteNote(req: Request, res: Response): Promise<void> {
+  async deleteNote(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const noteId = req.params.id;
       const note = await noteService.getNoteById(noteId);
@@ -108,7 +128,7 @@ export class NoteController {
       await noteService.deleteNote(noteId);
       res.sendStatus(204);
     } catch (error) {
-      res.status(500).json({ message: 'Failed to delete note' });
+      next(error);
     }
   }
 }
