@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { userService, noteService } from '../services';
+import { CreateNoteDTO } from '../types/dto/note.dto';
 
 export class NoteController {
   async createNote(
@@ -8,15 +9,8 @@ export class NoteController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { title, content } = req.body;
+      const { title, content }: CreateNoteDTO = req.body;
       const tokenUserId = req.user!.userId;
-
-      const user = await userService.getUserById(tokenUserId);
-
-      if (!user) {
-        res.status(404).json({ message: 'Invalid token ' });
-        return;
-      }
 
       const newNote = await noteService.createNote({
         title,

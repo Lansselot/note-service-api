@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { userService } from '../services';
+import Boom from '@hapi/boom';
 
 export class UserController {
   async getUserById(
@@ -9,14 +10,15 @@ export class UserController {
   ): Promise<void> {
     try {
       const tokenUserId = req.user!.userId;
+      if (!tokenUserId) throw Boom.unauthorized();
+
       const user = await userService.getUserById(tokenUserId);
 
-      if (!user) {
-        res.status(404).json({ message: 'Invalid token' });
-        return;
-      }
-
-      res.json(user);
+      res.json({
+        id: user!.id,
+        name: user!.name,
+        email: user!.email,
+      });
     } catch (error) {
       next(error);
     }
@@ -29,17 +31,16 @@ export class UserController {
   ): Promise<void> {
     try {
       const tokenUserId = req.user!.userId;
+      if (!tokenUserId) throw Boom.unauthorized();
+
       const data = req.body;
 
-      const user = await userService.getUserById(tokenUserId);
-
-      if (!user) {
-        res.status(404).json({ message: 'Invalid token' });
-        return;
-      }
-
       const updatedUser = await userService.updateUserById(tokenUserId, data);
-      res.json(updatedUser);
+      res.json({
+        id: updatedUser!.id,
+        name: updatedUser!.name,
+        email: updatedUser!.email,
+      });
     } catch (error) {
       next(error);
     }
@@ -52,13 +53,7 @@ export class UserController {
   ): Promise<void> {
     try {
       const tokenUserId = req.user!.userId;
-
-      const user = await userService.getUserById(tokenUserId);
-
-      if (!user) {
-        res.status(404).json({ message: 'Invalid token' });
-        return;
-      }
+      if (!tokenUserId) throw Boom.unauthorized();
 
       await userService.deleteUser(tokenUserId);
       res.sendStatus(204);

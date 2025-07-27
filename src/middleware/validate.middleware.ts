@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
+import Boom from '@hapi/boom';
 
 export const validate = (
   req: Request,
@@ -9,7 +10,7 @@ export const validate = (
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    res.status(400).json(errors);
+    next(Boom.badRequest('Validation failed', { errors: errors.array() }));
     return;
   }
 

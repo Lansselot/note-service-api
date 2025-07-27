@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { userService } from '../services';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import type { AppJwtPayload } from '../types/jwt';
+import { authService, userService } from '../services';
+import { CreateUserDTO } from '../types/dto/user.dto';
 
 export class AuthController {
   async register(
@@ -11,27 +9,14 @@ export class AuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { name, email, password } = req.body;
+      const data: CreateUserDTO = req.body;
 
-      const existingUser = await userService.getUserByEmail(email);
-
-      if (existingUser) {
-        res
-          .status(409)
-          .json({ message: 'User with this email already exists' });
-        return;
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = await userService.createUser({
-        name,
-        email,
-        password: hashedPassword,
+      const newUser = await userService.createUser(data);
+      res.status(201).json({
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
       });
-
-      res
-        .status(201)
-        .json({ id: newUser.id, name: newUser.name, email: newUser.email });
     } catch (error) {
       next(error);
     }
@@ -41,30 +26,9 @@ export class AuthController {
     try {
       const { email, password } = req.body;
 
-      const user = await userService.getUserByEmail(email);
+      const token = await authService.login(email, password);
 
-      if (!user) {
-        res.status(401).json({ message: 'Invalid email or password' });
-        return;
-      }
-
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-
-      if (!isPasswordValid) {
-        res.status(401).json({ message: 'Invalid email or password' });
-        return;
-      }
-
-      const payload: AppJwtPayload = { userId: user.id };
-
-      const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
-        expiresIn: '1d',
-      });
-
-      res.json({
-        token,
-        user: { id: user.id, name: user.name, email: user.email },
-      });
+      res.json({ token });
     } catch (error) {
       next(error);
     }

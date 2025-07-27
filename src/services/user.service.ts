@@ -1,43 +1,67 @@
 import prisma from '../prisma-client';
 import { User } from '@prisma/client';
+import { CreateUserDTO, UpdateUserDTO } from '../types/dto/user.dto';
+import Boom from '@hapi/boom';
+import bcrypt from 'bcryptjs';
 
 export class UserService {
-  public async createUser(data: {
-    name: string;
-    email: string;
-    password: string;
-  }): Promise<User> {
+  async createUser({ name, email, password }: CreateUserDTO): Promise<User> {
+    const existingUser = await this.getUserByEmail(email);
+    if (existingUser)
+      throw Boom.conflict('User with this email already exists');
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
     return prisma.user.create({
-      data,
+      data: {
+        name,
+        email,
+        passwordHash,
+      },
     });
   }
 
-  async getAllUsers(): Promise<User[]> {
-    return prisma.user.findMany();
-  }
-
-  async getUserById(id: string): Promise<User | null> {
-    return prisma.user.findUnique({
-      where: { id },
+  async getUserById(userId: string): Promise<User | null> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
     });
+    if (!user) throw Boom.notFound('User not found');
+
+    return user;
   }
 
   async getUserByEmail(email: string): Promise<User | null> {
-    return prisma.user.findUnique({
+    const user = prisma.user.findUnique({
       where: { email },
     });
+    if (!user) throw Boom.notFound('User not found');
+
+    return user;
   }
 
-  async updateUserById(id: string, data: Partial<User>): Promise<User | null> {
+  async updateUserById(
+    userId: string,
+    data: UpdateUserDTO
+  ): Promise<User | null> {
+    await this.getUserById(userId);
+
+    if (data.email) {
+      const existingUser = await this.getUserByEmail(data.email);
+      if (existingUser && existingUser.id != userId)
+        throw Boom.conflict('User with this email already exists');
+    }
+
     return prisma.user.update({
-      where: { id },
+      where: { id: userId },
       data,
     });
   }
 
-  async deleteUser(id: string): Promise<User> {
+  async deleteUser(userId: string): Promise<User> {
+    await this.getUserById(userId);
+
     return prisma.user.delete({
-      where: { id },
+      where: { id: userId },
     });
   }
 }
