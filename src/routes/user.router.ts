@@ -3,9 +3,9 @@ import {
   createUserValidator,
   updateUserValidator,
 } from '../validators/user.validator';
-import { validate } from '../middleware/validate';
+import { validate } from '../middleware/validate.middleware';
 import { userController } from '../controllers';
-import { authenticate } from '../middleware/auth';
+import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
 

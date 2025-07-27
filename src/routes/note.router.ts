@@ -4,9 +4,9 @@ import {
   noteIdValidator,
   updateNoteValidator,
 } from '../validators/note.validator';
-import { validate } from '../middleware/validate';
+import { validate } from '../middleware/validate.middleware';
 import { noteController } from '../controllers';
-import { authenticate } from '../middleware/auth';
+import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
 

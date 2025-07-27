@@ -4,7 +4,7 @@ import {
   loginValidator,
   registerValidator,
 } from '../validators/auth.validator';
-import { validate } from '../middleware/validate';
+import { validate } from '../middleware/validate.middleware';
 import { authController } from '../controllers';
 
 const router = Router();
