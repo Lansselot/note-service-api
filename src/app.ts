@@ -1,7 +1,7 @@
 import express, { Express } from 'express';
 import { authRoutes, noteRoutes, userRoutes } from './routes';
 
-const app: Express = express();
+export const app: Express = express();
 
 app.use(express.json());
 
@@ -13,7 +13,3 @@ app.use('/', (_, res) => {
   res.status(404).json({ message: 'Not found' });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
