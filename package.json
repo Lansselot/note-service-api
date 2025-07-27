@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "main": "app.ts",
   "scripts": {
-    "start": "node src/app.ts",
+    "start": "node dist/app.js",
+    "build": "tsc",
     "dev": "ts-node-dev src/app.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "migration:create": "prisma migrate dev --create-only",
-    "migrate": "prisma migrate deploy"
+    "migrate": "prisma migrate deploy",
+    "start:migrate": "prisma migrate deploy && yarn start"
   },
   "repository": "https://github.com/Lansselot/note-service-api",
   "author": "lansselot <pozharov2003@gmail.com>",
