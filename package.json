@@ -8,9 +8,12 @@
     "dev": "ts-node-dev src/server.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate:generate": "prisma migrate dev && prisma generate",
     "migration:create": "prisma migrate dev --create-only",
     "migrate": "prisma migrate deploy",
-    "start:migrate": "prisma migrate deploy && yarn start"
+    "start:migrate": "prisma migrate deploy && yarn start",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
   },
   "repository": "https://github.com/Lansselot/note-service-api",
   "author": "lansselot <pozharov2003@gmail.com>",
