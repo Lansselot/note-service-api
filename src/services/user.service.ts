@@ -41,19 +41,19 @@ export class UserService {
 
   async updateUserById(
     userId: string,
-    data: UpdateUserDTO
+    { name, email }: UpdateUserDTO
   ): Promise<User | null> {
     await this.getUserById(userId);
 
-    if (data.email) {
-      const existingUser = await this.getUserByEmail(data.email);
+    if (email) {
+      const existingUser = await this.getUserByEmail(email);
       if (existingUser && existingUser.id != userId)
         throw Boom.conflict('User with this email already exists');
     }
 
     return prisma.user.update({
       where: { id: userId },
-      data,
+      data: { name, email },
     });
   }
 
