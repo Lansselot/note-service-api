@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
-  createUserValidator,
-  updateUserValidator,
+  putUserValidator,
+  patchUserValidator,
 } from '../validators/user.validator';
 import { validate } from '../middleware/validate.middleware';
 import { userController } from '../controllers';
@@ -12,14 +12,14 @@ const router = Router();
 router.get('/', authenticate, userController.getUserById);
 router.put(
   '/',
-  createUserValidator,
+  putUserValidator,
   validate,
   authenticate,
   userController.updateUser
 );
 router.patch(
   '/',
-  updateUserValidator,
+  patchUserValidator,
   validate,
   authenticate,
   userController.updateUser

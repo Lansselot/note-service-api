@@ -1,33 +1,19 @@
-import { body, param } from 'express-validator';
+import { checkSchema } from 'express-validator';
+import { contentValidation, titleValidation } from './fields/note.field';
+import { idValidation } from './fields/common.field';
 
-export const createNoteValidator = [
-  body('title')
-    .isString()
-    .withMessage('title must be string.')
-    .isLength({ min: 2, max: 20 })
-    .withMessage('title must be between 2 and 20 characters long.'),
-  body('content')
-    .isString()
-    .withMessage('content must be string.')
-    .isLength({ max: 300 })
-    .withMessage('content must be no more than 300 characters long.'),
-];
+export const createNoteValidator = checkSchema({
+  title: titleValidation,
+  content: contentValidation,
+});
 
-export const noteIdValidator = [
-  param('id').isUUID().withMessage('id must be valid'),
-];
+export const noteIdValidator = checkSchema({
+  id: idValidation,
+});
 
-export const updateNoteValidator = [
-  body('title')
-    .optional()
-    .isString()
-    .withMessage('title must be string.')
-    .isLength({ min: 2, max: 20 })
-    .withMessage('title must be between 2 and 20 characters long.'),
-  body('content')
-    .optional()
-    .isString()
-    .withMessage('content must be string.')
-    .isLength({ max: 300 })
-    .withMessage('content must be no more than 300 characters long.'),
-];
+export const putNoteValidator = createNoteValidator;
+
+export const patchNoteValidator = checkSchema({
+  title: { ...titleValidation, optional: true },
+  content: { ...contentValidation, optional: true },
+});

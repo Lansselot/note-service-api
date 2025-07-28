@@ -2,7 +2,8 @@ import { Router } from 'express';
 import {
   createNoteValidator,
   noteIdValidator,
-  updateNoteValidator,
+  putNoteValidator,
+  patchNoteValidator,
 } from '../validators/note.validator';
 import { validate } from '../middleware/validate.middleware';
 import { noteController } from '../controllers';
@@ -27,7 +28,7 @@ router.get(
 );
 router.put(
   '/:id',
-  createNoteValidator,
+  putNoteValidator,
   noteIdValidator,
   validate,
   authenticate,
@@ -35,7 +36,7 @@ router.put(
 );
 router.patch(
   '/:id',
-  updateNoteValidator,
+  patchNoteValidator,
   noteIdValidator,
   validate,
   authenticate,
