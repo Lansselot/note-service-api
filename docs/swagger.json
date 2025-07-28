@@ -163,11 +163,6 @@
                   "name": {
                     "type": "string",
                     "example": "new_name"
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "new_email@example.com"
                   }
                 }
               }
@@ -363,10 +358,6 @@
                   "title": {
                     "type": "string",
                     "example": "New Title"
-                  },
-                  "content": {
-                    "type": "string",
-                    "example": "New content"
                   }
                 }
               }
