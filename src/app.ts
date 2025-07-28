@@ -1,7 +1,9 @@
 import express, { Express } from 'express';
 import { authRoutes, noteRoutes, userRoutes } from './routes';
 import { errorHandler } from './middleware/error-handler.middleware';
-import swaggerDocs from './utils/swagger';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocs from '../docs/swagger.json';
+import { get } from 'http';
 
 export const app: Express = express();
 
@@ -11,7 +13,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/notes', noteRoutes);
 
-swaggerDocs(app);
+app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use('/', (_, res) => {
   res.status(404).json({ message: 'Not found' });
