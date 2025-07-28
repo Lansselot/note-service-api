@@ -5,11 +5,11 @@ import Boom from '@hapi/boom';
 import { userService } from '.';
 
 export class NoteService {
-  async createNote(data: CreateNoteDTO): Promise<Note> {
-    await userService.getUserById(data.userId);
+  async createNote({ title, content, userId }: CreateNoteDTO): Promise<Note> {
+    await userService.getUserById(userId);
 
     return prisma.note.create({
-      data,
+      data: { title, content, userId },
     });
   }
 
@@ -32,13 +32,13 @@ export class NoteService {
 
   async updateNoteById(
     noteId: string,
-    data: UpdateNoteDTO
+    { title, content }: UpdateNoteDTO
   ): Promise<Note | null> {
     await this.getNoteById(noteId);
 
     return prisma.note.update({
       where: { id: noteId },
-      data,
+      data: { title, content },
     });
   }
 
