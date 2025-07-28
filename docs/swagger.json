@@ -117,16 +117,11 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["name", "email"],
+                "required": ["name"],
                 "properties": {
                   "name": {
                     "type": "string",
                     "example": "new_name"
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email",
-                    "example": "new_email@example.com"
                   }
                 }
               }
@@ -142,9 +137,6 @@
           },
           "401": {
             "description": "Invalid token"
-          },
-          "409": {
-            "description": "Email already in use"
           }
         }
       },
@@ -158,7 +150,6 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["name", "email"],
                 "properties": {
                   "name": {
                     "type": "string",
@@ -178,9 +169,6 @@
           },
           "401": {
             "description": "Invalid token"
-          },
-          "409": {
-            "description": "Email already in use"
           }
         }
       },
@@ -353,11 +341,14 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["title", "content"],
                 "properties": {
                   "title": {
                     "type": "string",
                     "example": "New Title"
+                  },
+                  "content": {
+                    "type": "string",
+                    "example": "New content"
                   }
                 }
               }
