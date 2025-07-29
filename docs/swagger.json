@@ -90,7 +90,41 @@
         }
       }
     },
-    "/api/users/": {
+    "/api/auth/refresh": {
+      "post": {
+        "summary": "Refresh JWT Token",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["refreshToken"],
+                "properties": {
+                  "refreshToken": {
+                    "type": "string",
+                    "example": "refreshToken"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token refreshed successfully"
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Invalid refresh token"
+          }
+        }
+      }
+    },
+    "/api/users": {
       "get": {
         "summary": "Get User by ID",
         "tags": ["Users"],
@@ -189,7 +223,7 @@
         }
       }
     },
-    "/api/notes/": {
+    "/api/notes": {
       "get": {
         "summary": "Get all Notes by User ID",
         "tags": ["Notes"],
