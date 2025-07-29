@@ -3,7 +3,6 @@ import { authRoutes, noteRoutes, userRoutes } from './routes';
 import { errorHandler } from './middleware/error-handler.middleware';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocs from '../docs/swagger.json';
-import { get } from 'http';
 
 export const app: Express = express();
 

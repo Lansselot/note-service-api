@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
 import { AppJwtPayload } from '../types/jwt';
 import Boom from '@hapi/boom';
+import { verifyAccessToken } from '../utils/jwt';
 
 function getTokenFromHeader(req: Request) {
   if (
@@ -28,10 +28,7 @@ export function authenticate(
   }
 
   try {
-    const decoted = jwt.verify(
-      token,
-      process.env.JWT_SECRET as string
-    ) as AppJwtPayload;
+    const decoted = verifyAccessToken(token);
 
     if (!req.user) req.user = {} as AppJwtPayload;
     req.user!.userId = decoted.userId;

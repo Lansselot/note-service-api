@@ -1,14 +1,11 @@
-import dotenv from 'dotenv';
 import Boom from '@hapi/boom';
 import { userService } from '.';
 import bcrypt from 'bcryptjs';
-import { AppJwtPayload } from '../types/jwt';
-import jwt from 'jsonwebtoken';
-
-dotenv.config();
+import { AppJwtPayload, JwtTokens } from '../types/jwt';
+import { generateTokens, verifyRefreshToken } from '../utils/jwt';
 
 export class AuthService {
-  async login(email: string, password: string): Promise<string> {
+  async login(email: string, password: string): Promise<JwtTokens> {
     const user = await userService.getUserByEmail(email);
     if (!user) throw Boom.unauthorized('Invalid email or password');
 
@@ -16,10 +13,15 @@ export class AuthService {
     if (!isPasswordValid) throw Boom.unauthorized('Invalid email or password');
 
     const payload: AppJwtPayload = { userId: user.id };
-    const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
-      expiresIn: '1h',
-    });
+    const tokens = generateTokens(payload);
+    return tokens;
+  }
 
-    return token;
+  async refresh(refreshToken: string): Promise<JwtTokens> {
+    const decoted = verifyRefreshToken(refreshToken);
+
+    const payload: AppJwtPayload = { userId: decoted.userId };
+    const tokens = generateTokens(payload);
+    return tokens;
   }
 }

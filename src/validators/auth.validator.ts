@@ -15,3 +15,11 @@ export const loginValidator = checkSchema({
   email: emailValidation,
   password: passwordValidation,
 });
+
+export const refreshTokenValidator = checkSchema({
+  refreshToken: {
+    isString: true,
+    notEmpty: true,
+    errorMessage: 'Refresh token is required',
+  },
+});

@@ -26,9 +26,25 @@ export class AuthController {
     try {
       const { email, password } = req.body;
 
-      const token = await authService.login(email, password);
+      const tokens = await authService.login(email, password);
 
-      res.json({ token });
+      res.json(tokens);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async refresh(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { refreshToken } = req.body;
+
+      const tokens = await authService.refresh(refreshToken);
+
+      res.json(tokens);
     } catch (error) {
       next(error);
     }
