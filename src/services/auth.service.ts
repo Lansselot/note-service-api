@@ -2,9 +2,14 @@ import Boom from '@hapi/boom';
 import { userService } from '.';
 import bcrypt from 'bcryptjs';
 import { AppJwtPayload, JwtTokens } from '../types/jwt';
-import { generateTokens, verifyRefreshToken } from '../utils/jwt';
+import {
+  generateTokens,
+  verifyAccessToken,
+  verifyRefreshToken,
+} from '../utils/jwt';
 import '../redis-client';
 import redis from '../redis-client';
+import { randomUUID } from 'crypto';
 
 export class AuthService {
   async login(email: string, password: string): Promise<JwtTokens> {
@@ -14,12 +19,14 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) throw Boom.unauthorized('Invalid email or password');
 
-    const payload: AppJwtPayload = { userId: user.id };
+    const sessionId = randomUUID();
+    const payload: AppJwtPayload = { userId: user.id, sessionId };
+
     const tokens = generateTokens(payload);
 
     await redis.set(
-      `refresh:${user.id}:${tokens.refreshToken}`,
-      1,
+      `refresh:${user.id}:${sessionId}`,
+      tokens.refreshToken,
       'EX',
       60 * 60 * 24
     );
@@ -28,25 +35,37 @@ export class AuthService {
   }
 
   async refresh(oldRefreshToken: string): Promise<JwtTokens> {
-    const decoted = verifyRefreshToken(oldRefreshToken);
-    const storedRefreshToken = await redis.exists(
-      `refresh:${decoted.userId}:${oldRefreshToken}`
+    const { userId, sessionId } = verifyRefreshToken(oldRefreshToken);
+    const storedRefreshToken = await redis.get(
+      `refresh:${userId}:${sessionId}`
     );
 
     if (!storedRefreshToken) throw Boom.unauthorized('Invalid refresh token');
 
-    await redis.del(`refresh:${decoted.userId}:${oldRefreshToken}`);
+    await redis.del(`refresh:${userId}:${sessionId}`);
 
-    const payload: AppJwtPayload = { userId: decoted.userId };
+    const payload: AppJwtPayload = {
+      userId: userId,
+      sessionId: sessionId,
+    };
+
     const tokens = generateTokens(payload);
 
     await redis.set(
-      `refresh:${decoted.userId}:${tokens.refreshToken}`,
-      1,
+      `refresh:${payload.userId}:${payload.sessionId}`,
+      tokens.refreshToken,
       'EX',
       60 * 60 * 24
     );
 
     return tokens;
+  }
+
+  async logout(accessToken: string): Promise<void> {
+    const { userId, sessionId } = verifyAccessToken(accessToken);
+
+    await redis.del(`refresh:${userId}:${sessionId}`);
+
+    await redis.set(`blacklist:${accessToken}`, '1', 'EX', 60 * 60);
   }
 }

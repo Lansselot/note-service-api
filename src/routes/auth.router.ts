@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { register } from 'module';
 import {
   loginValidator,
   refreshTokenValidator,
@@ -7,6 +6,7 @@ import {
 } from '../validators/auth.validator';
 import { validate } from '../middleware/validate.middleware';
 import { authController } from '../controllers';
+import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
 
@@ -18,5 +18,6 @@ router.post(
   validate,
   authController.refresh
 );
+router.post('/logout', authenticate, authController.logout);
 
 export default router;
