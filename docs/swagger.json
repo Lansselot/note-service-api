@@ -124,6 +124,21 @@
         }
       }
     },
+    "/api/auth/logout": {
+      "post": {
+        "summary": "Logout User",
+        "tags": ["Auth"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "204": {
+            "description": "User logged out successfully"
+          },
+          "401": {
+            "description": "Invalid token"
+          }
+        }
+      }
+    },
     "/api/users": {
       "get": {
         "summary": "Get User by ID",
