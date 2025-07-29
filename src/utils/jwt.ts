@@ -23,13 +23,13 @@ export function generateTokens(payload: AppJwtPayload): JwtTokens {
   const accessToken = jwt.sign(
     payload,
     process.env.ACCESS_TOKEN_SECRET as string,
-    { expiresIn: '1m' }
+    { expiresIn: '1h' }
   );
 
   const refreshToken = jwt.sign(
     payload,
     process.env.REFRESH_TOKEN_SECRET as string,
-    { expiresIn: '10m' }
+    { expiresIn: '1d' }
   );
 
   return { accessToken, refreshToken };
