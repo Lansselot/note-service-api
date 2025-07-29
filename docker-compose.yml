@@ -12,19 +12,36 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - note-service
-  app:
-    container_name: note_app
-    build:
-      context: .
-      dockerfile: Dockerfile
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: always
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     ports:
-      - '3000:3000'
-    depends_on:
-      - postgres
+      - '${REDIS_PORT}:${REDIS_PORT}'
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --requirepass '${REDIS_PASSWORD}'
     networks:
       - note-service
-    volumes:
-      - .:/dist
+
+  # app:
+  #   container_name: note_app
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - '3000:3000'
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - note-service
+  #   volumes:
+  #     - .:/dist
 volumes:
   postgres_data:
 
