@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { userService } from '../services';
-import Boom from '@hapi/boom';
+import { authService, userService } from '../services';
 
 export class UserController {
   async getUserById(
@@ -10,7 +9,6 @@ export class UserController {
   ): Promise<void> {
     try {
       const tokenUserId = req.user!.userId;
-      if (!tokenUserId) throw Boom.unauthorized();
 
       const user = await userService.getUserById(tokenUserId);
 
@@ -31,7 +29,6 @@ export class UserController {
   ): Promise<void> {
     try {
       const tokenUserId = req.user!.userId;
-      if (!tokenUserId) throw Boom.unauthorized();
 
       const data = req.body;
 
@@ -53,9 +50,12 @@ export class UserController {
   ): Promise<void> {
     try {
       const tokenUserId = req.user!.userId;
-      if (!tokenUserId) throw Boom.unauthorized();
+
+      const accessToken = req.accessToken;
 
       await userService.deleteUser(tokenUserId);
+      await authService.logout(accessToken!);
+
       res.sendStatus(204);
     } catch (error) {
       next(error);

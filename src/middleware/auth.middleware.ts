@@ -11,7 +11,7 @@ export async function authenticate(
 ) {
   const accessToken = getAccessTokenFromHeader(req);
   if (!accessToken) {
-    next(Boom.unauthorized('Invalid token'));
+    next(Boom.unauthorized('Invalid access token'));
     return;
   }
 
@@ -20,12 +20,14 @@ export async function authenticate(
 
     if (!req.user) req.user = {} as AppJwtPayload;
     req.user!.userId = decoted.userId;
+    req.user!.sessionId = decoted.sessionId;
+    req.accessToken = accessToken;
 
     const tokenRevoked = await redis.exists(`blacklist:${accessToken}`);
-    if (tokenRevoked) next(Boom.unauthorized('Token is revoked'));
+    if (tokenRevoked) next(Boom.unauthorized('Invalid access token'));
 
     next();
   } catch (error) {
-    next(Boom.unauthorized('Invalid token'));
+    next(Boom.unauthorized('Invalid access token'));
   }
 }

@@ -49,4 +49,16 @@ export class AuthController {
       next(error);
     }
   }
+
+  async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const accessToken = req.accessToken;
+
+      await authService.logout(accessToken!);
+
+      res.sendStatus(204);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
