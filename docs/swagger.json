@@ -134,7 +134,7 @@
             "description": "User logged out successfully"
           },
           "401": {
-            "description": "Invalid token"
+            "description": "Invalid access token"
           }
         }
       }
@@ -149,10 +149,7 @@
             "description": "User retrieved successfully"
           },
           "401": {
-            "description": "Invalid token"
-          },
-          "404": {
-            "description": "User not found"
+            "description": "Invalid access token"
           }
         }
       },
@@ -178,14 +175,14 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "User updated successfully"
           },
           "400": {
             "description": "Validation failed"
           },
           "401": {
-            "description": "Invalid token"
+            "description": "Invalid access token"
           }
         }
       },
@@ -210,14 +207,14 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "User updated successfully"
           },
           "400": {
             "description": "Validation failed"
           },
           "401": {
-            "description": "Invalid token"
+            "description": "Invalid access token"
           }
         }
       },
@@ -230,10 +227,89 @@
             "description": "User deleted successfully"
           },
           "401": {
-            "description": "Invalid token"
+            "description": "Invalid access token"
+          }
+        }
+      }
+    },
+    "/api/users/change-email": {
+      "post": {
+        "summary": "Change User Email",
+        "tags": ["Users"],
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["newEmail", "password"],
+                "properties": {
+                  "newEmail": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "email@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "Password123!@#"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email changed successfully"
           },
-          "404": {
-            "description": "User not found"
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Invalid access token"
+          }
+        }
+      }
+    },
+    "/api/users/change-password": {
+      "post": {
+        "summary": "Change User Password",
+        "tags": ["Users"],
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["currentPassword", "newPassword"],
+                "properties": {
+                  "currentPassword": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "Password123!@#"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "NewPassword123!@#"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Password changed successfully"
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Invalid access token"
           }
         }
       }
@@ -248,10 +324,7 @@
             "description": "Notes retrieved successfully"
           },
           "401": {
-            "description": "Invalid token"
-          },
-          "404": {
-            "description": "User not found"
+            "description": "Invalid access token"
           }
         }
       },
@@ -288,7 +361,7 @@
             "description": "Validation failed"
           },
           "401": {
-            "description": "Invalid token"
+            "description": "Invalid access token"
           }
         }
       }
@@ -313,7 +386,7 @@
             "description": "Note retrieved successfully"
           },
           "401": {
-            "description": "Invalid token"
+            "description": "Invalid access token"
           },
           "404": {
             "description": "Note not found"
@@ -363,7 +436,7 @@
             "description": "Validation failed"
           },
           "401": {
-            "description": "Invalid token"
+            "description": "Invalid access token"
           },
           "404": {
             "description": "Note not found"
@@ -412,7 +485,7 @@
             "description": "Validation failed"
           },
           "401": {
-            "description": "Invalid token"
+            "description": "Invalid access token"
           },
           "404": {
             "description": "Note not found"
@@ -438,7 +511,7 @@
             "description": "Note deleted successfully"
           },
           "401": {
-            "description": "Invalid token"
+            "description": "Invalid access token"
           },
           "404": {
             "description": "Note not found"
