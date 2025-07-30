@@ -2,6 +2,8 @@ import { Router } from 'express';
 import {
   putUserValidator,
   patchUserValidator,
+  changeEmailValidator,
+  changePasswordValidator,
 } from '../validators/user.validator';
 import { validate } from '../middleware/validate.middleware';
 import { userController } from '../controllers';
@@ -25,5 +27,19 @@ router.patch(
   userController.updateUser
 );
 router.delete('/', authenticate, userController.deleteUser);
+router.post(
+  '/change-email',
+  changeEmailValidator,
+  validate,
+  authenticate,
+  userController.changeEmail
+);
+router.post(
+  '/change-password',
+  changePasswordValidator,
+  validate,
+  authenticate,
+  userController.changePassword
+);
 
 export default router;

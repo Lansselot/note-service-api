@@ -62,4 +62,39 @@ export class UserService {
       where: { id: userId },
     });
   }
+
+  async changeEmail(
+    userId: string,
+    { newEmail, password }: ChangeEmailDTO
+  ): Promise<User> {
+    const user = await this.getUserById(userId);
+
+    const isPasswordValid = await bcrypt.compare(password, user!.passwordHash);
+    if (!isPasswordValid) throw Boom.unauthorized('Invalid password');
+
+    return prisma.user.update({
+      where: { id: userId },
+      data: { email: newEmail },
+    });
+  }
+
+  async changePassword(
+    userId: string,
+    { currentPassword, newPassword }: ChangePasswordDTO
+  ): Promise<User> {
+    const user = await this.getUserById(userId);
+
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user!.passwordHash
+    );
+    if (!isPasswordValid) throw Boom.unauthorized('Invalid old password');
+
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    return prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: newPasswordHash },
+    });
+  }
 }
