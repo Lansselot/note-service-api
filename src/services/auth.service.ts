@@ -1,5 +1,4 @@
 import Boom from '@hapi/boom';
-import { userService } from '.';
 import bcrypt from 'bcryptjs';
 import { AppJwtPayload, JwtTokens } from '../types/jwt';
 import {
@@ -10,10 +9,13 @@ import {
 import '../redis-client';
 import redis from '../redis-client';
 import { randomUUID } from 'crypto';
+import prisma from '../prisma-client';
 
 export class AuthService {
   async login(email: string, password: string): Promise<JwtTokens> {
-    const user = await userService.getUserByEmail(email);
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
     if (!user) throw Boom.unauthorized('Invalid email or password');
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);

@@ -31,7 +31,7 @@ export class UserService {
   }
 
   async getUserByEmail(email: string): Promise<User | null> {
-    const user = prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email },
     });
     if (!user) throw Boom.notFound('User not found');
@@ -39,10 +39,7 @@ export class UserService {
     return user;
   }
 
-  async updateUserById(
-    userId: string,
-    { name }: UpdateUserDTO
-  ): Promise<User | null> {
+  async updateUserById(userId: string, { name }: UpdateUserDTO): Promise<User> {
     await this.getUserById(userId);
 
     return prisma.user.update({
