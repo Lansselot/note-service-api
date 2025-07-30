@@ -1,12 +1,19 @@
 import prisma from '../prisma-client';
 import { User } from '@prisma/client';
-import { CreateUserDTO, UpdateUserDTO } from '../types/dto/user.dto';
+import {
+  ChangeEmailDTO,
+  ChangePasswordDTO,
+  CreateUserDTO,
+  UpdateUserDTO,
+} from '../types/dto/user.dto';
 import Boom from '@hapi/boom';
 import bcrypt from 'bcryptjs';
 
 export class UserService {
   async createUser({ name, email, password }: CreateUserDTO): Promise<User> {
-    const existingUser = await this.getUserByEmail(email);
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
     if (existingUser)
       throw Boom.conflict('User with this email already exists');
 
