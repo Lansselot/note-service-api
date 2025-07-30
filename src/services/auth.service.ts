@@ -66,6 +66,6 @@ export class AuthService {
 
     await redis.del(`refresh:${userId}:${sessionId}`);
 
-    await redis.set(`blacklist:${accessToken}`, '1', 'EX', 60 * 60);
+    await redis.set(`blacklist:${accessToken}`, 'logout', 'EX', 60 * 60);
   }
 }
