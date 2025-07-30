@@ -59,7 +59,9 @@ export class NoteController {
   ): Promise<void> {
     try {
       const { noteId } = req.params;
-      const note = await noteService.getNoteById(noteId);
+      const tokenUserId = req.user!.userId;
+
+      const note = await noteService.getNoteById(noteId, tokenUserId);
 
       res.json(note);
     } catch (error) {

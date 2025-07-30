@@ -18,11 +18,11 @@ export class NoteService {
     });
   }
 
-  async getNoteById(noteId: string): Promise<Note | null> {
-    const note = prisma.note.findUnique({
+  async getNoteById(noteId: string, userId: string): Promise<Note | null> {
+    const note = await prisma.note.findUnique({
       where: { id: noteId },
     });
-    if (!note) throw Boom.notFound('Note not found');
+    if (!note || note!.userId !== userId) throw Boom.notFound('Note not found');
 
     return note;
   }
@@ -48,10 +48,9 @@ export class NoteService {
     userId: string,
     { title, content }: UpdateNoteDTO
   ): Promise<Note | null> {
-    const note = await this.getNoteById(noteId);
+    const note = await this.getNoteById(noteId, userId);
 
-    if (note!.userId !== userId)
-      throw Boom.forbidden('You do not have permission to update this note');
+    if (note!.userId !== userId) throw Boom.notFound('Note not found');
 
     return prisma.note.update({
       where: { id: noteId },
@@ -60,10 +59,9 @@ export class NoteService {
   }
 
   async deleteNote(noteId: string, userId: string): Promise<Note> {
-    const note = await this.getNoteById(noteId);
+    const note = await this.getNoteById(noteId, userId);
 
-    if (note!.userId !== userId)
-      throw Boom.forbidden('You do not have permission to delete this note');
+    if (note!.userId !== userId) throw Boom.notFound('Note not found');
 
     return prisma.note.delete({
       where: { id: noteId },
