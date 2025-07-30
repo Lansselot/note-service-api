@@ -1,8 +1,13 @@
 import prisma from '../prisma-client';
 import { Note } from '@prisma/client';
-import { CreateNoteDTO, UpdateNoteDTO } from '../types/dto/note.dto';
+import {
+  CreateNoteDTO,
+  GetNotesDTO,
+  UpdateNoteDTO,
+} from '../types/dto/note.dto';
 import Boom from '@hapi/boom';
 import { userService } from '.';
+import { SortOrder } from '../types/enums/sort.enum';
 
 export class NoteService {
   async createNote({ title, content, userId }: CreateNoteDTO): Promise<Note> {
@@ -22,19 +27,31 @@ export class NoteService {
     return note;
   }
 
-  async getAllNotesByUserId(userId: string): Promise<Note[] | null> {
+  async getAllNotesByUserId({
+    userId,
+    limit = 10,
+    offset = 0,
+    sortOrder = SortOrder.DESC,
+  }: GetNotesDTO): Promise<Note[] | null> {
     await userService.getUserById(userId);
 
     return prisma.note.findMany({
+      skip: offset,
+      take: limit,
       where: { userId },
+      orderBy: { createdAt: sortOrder },
     });
   }
 
   async updateNoteById(
     noteId: string,
+    userId: string,
     { title, content }: UpdateNoteDTO
   ): Promise<Note | null> {
-    await this.getNoteById(noteId);
+    const note = await this.getNoteById(noteId);
+
+    if (note!.userId !== userId)
+      throw Boom.forbidden('You do not have permission to update this note');
 
     return prisma.note.update({
       where: { id: noteId },
@@ -42,8 +59,11 @@ export class NoteService {
     });
   }
 
-  async deleteNote(noteId: string): Promise<Note> {
-    await this.getNoteById(noteId);
+  async deleteNote(noteId: string, userId: string): Promise<Note> {
+    const note = await this.getNoteById(noteId);
+
+    if (note!.userId !== userId)
+      throw Boom.forbidden('You do not have permission to delete this note');
 
     return prisma.note.delete({
       where: { id: noteId },

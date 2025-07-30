@@ -4,6 +4,7 @@ import {
   noteIdValidator,
   putNoteValidator,
   patchNoteValidator,
+  getNoteValidator,
 } from '../validators/note.validator';
 import { validate } from '../middleware/validate.middleware';
 import { noteController } from '../controllers';
@@ -18,32 +19,38 @@ router.post(
   authenticate,
   noteController.createNote
 );
-router.get('/', authenticate, noteController.getAllNotesByUserId);
 router.get(
-  '/:id',
+  '/',
+  getNoteValidator,
+  validate,
+  authenticate,
+  noteController.getAllNotesByUserId
+);
+router.get(
+  '/:noteId',
   noteIdValidator,
   validate,
   authenticate,
   noteController.getNoteById
 );
 router.put(
-  '/:id',
-  putNoteValidator,
+  '/:noteId',
   noteIdValidator,
+  putNoteValidator,
   validate,
   authenticate,
   noteController.updateNote
 );
 router.patch(
-  '/:id',
-  patchNoteValidator,
+  '/:noteId',
   noteIdValidator,
+  patchNoteValidator,
   validate,
   authenticate,
   noteController.updateNote
 );
 router.delete(
-  '/:id',
+  '/:noteId',
   noteIdValidator,
   validate,
   authenticate,

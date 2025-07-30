@@ -1,6 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
-import { userService, noteService } from '../services';
-import { CreateNoteDTO } from '../types/dto/note.dto';
+import { noteService } from '../services';
+import {
+  CreateNoteDTO,
+  GetNotesDTO,
+  UpdateNoteDTO,
+} from '../types/dto/note.dto';
+import { SortOrder } from '../types/enums/sort.enum';
 
 export class NoteController {
   async createNote(
@@ -30,14 +35,16 @@ export class NoteController {
   ): Promise<void> {
     try {
       const tokenUserId = req.user!.userId;
-      const user = await userService.getUserById(tokenUserId);
+      const { offset, limit, order } = req.query;
 
-      if (!user) {
-        res.status(404).json({ message: 'Invalid token' });
-        return;
-      }
+      const options: GetNotesDTO = {
+        userId: tokenUserId as string,
+        offset: offset ? parseInt(offset as string) : undefined,
+        limit: limit ? parseInt(limit as string) : undefined,
+        sortOrder: order as SortOrder,
+      };
 
-      const notes = await noteService.getAllNotesByUserId(tokenUserId);
+      const notes = await noteService.getAllNotesByUserId(options);
 
       res.json(notes);
     } catch (error) {
@@ -51,19 +58,8 @@ export class NoteController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const noteId = req.params.id;
+      const { noteId } = req.params;
       const note = await noteService.getNoteById(noteId);
-      const tokenUserId = req.user!.userId;
-
-      if (!note) {
-        res.status(404).json({ message: 'Note not found' });
-        return;
-      }
-
-      if (note.userId !== tokenUserId) {
-        res.status(403).json({ message: 'You do not have permission' });
-        return;
-      }
 
       res.json(note);
     } catch (error) {
@@ -77,22 +73,15 @@ export class NoteController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const noteId = req.params.id;
-      const note = await noteService.getNoteById(noteId);
-      const data = req.body;
+      const { noteId } = req.params;
       const tokenUserId = req.user!.userId;
+      const data: UpdateNoteDTO = req.body;
 
-      if (!note) {
-        res.status(404).json({ message: 'Note not found' });
-        return;
-      }
-
-      if (note.userId !== tokenUserId) {
-        res.status(403).json({ message: 'You do not have permission' });
-        return;
-      }
-
-      const updatedNote = await noteService.updateNoteById(noteId, data);
+      const updatedNote = await noteService.updateNoteById(
+        noteId,
+        tokenUserId,
+        data
+      );
       res.json(updatedNote);
     } catch (error) {
       next(error);
@@ -105,21 +94,11 @@ export class NoteController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const noteId = req.params.id;
-      const note = await noteService.getNoteById(noteId);
+      const { noteId } = req.params;
       const tokenUserId = req.user!.userId;
 
-      if (!note) {
-        res.status(404).json({ message: 'Note not found' });
-        return;
-      }
+      await noteService.deleteNote(noteId, tokenUserId);
 
-      if (note.userId !== tokenUserId) {
-        res.status(403).json({ message: 'You do not have permission' });
-        return;
-      }
-
-      await noteService.deleteNote(noteId);
       res.sendStatus(204);
     } catch (error) {
       next(error);

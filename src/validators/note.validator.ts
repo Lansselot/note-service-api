@@ -1,6 +1,12 @@
 import { checkSchema } from 'express-validator';
 import { contentValidation, titleValidation } from './fields/note.field';
 import { idValidation } from './fields/common.field';
+import { off } from 'process';
+import {
+  limitValidation,
+  offsetValidation,
+  orderValidation,
+} from './fields/query-params.field';
 
 export const createNoteValidator = checkSchema({
   title: titleValidation,
@@ -8,7 +14,7 @@ export const createNoteValidator = checkSchema({
 });
 
 export const noteIdValidator = checkSchema({
-  id: idValidation,
+  noteId: idValidation,
 });
 
 export const putNoteValidator = createNoteValidator;
@@ -16,4 +22,10 @@ export const putNoteValidator = createNoteValidator;
 export const patchNoteValidator = checkSchema({
   title: { ...titleValidation, optional: true },
   content: { ...contentValidation, optional: true },
+});
+
+export const getNoteValidator = checkSchema({
+  offset: offsetValidation,
+  limit: limitValidation,
+  order: orderValidation,
 });
