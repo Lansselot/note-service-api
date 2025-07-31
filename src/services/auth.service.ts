@@ -6,10 +6,9 @@ import {
   verifyAccessToken,
   verifyRefreshToken,
 } from '../utils/jwt';
-import '../redis-client';
-import redis from '../redis-client';
+import redis from '../clients/redis.client';
 import { randomUUID } from 'crypto';
-import prisma from '../prisma-client';
+import prisma from '../clients/prisma.client';
 
 export class AuthService {
   async login(email: string, password: string): Promise<JwtTokens> {

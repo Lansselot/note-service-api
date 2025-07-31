@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AppJwtPayload } from '../types/jwt';
 import Boom from '@hapi/boom';
 import { getAccessTokenFromHeader, verifyAccessToken } from '../utils/jwt';
-import redis from '../redis-client';
+import redis from '../clients/redis.client';
 
 export async function authenticate(
   req: Request,

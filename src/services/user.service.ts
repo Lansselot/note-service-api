@@ -1,4 +1,4 @@
-import prisma from '../prisma-client';
+import prisma from '../clients/prisma.client';
 import { User } from '@prisma/client';
 import {
   ChangeEmailDTO,
