@@ -61,4 +61,36 @@ export class AuthController {
       next(error);
     }
   }
+
+  async loginOTP(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { email } = req.body;
+
+      await authService.loginOTP(email);
+
+      res.sendStatus(204);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async verifyOTP(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { email, otp } = req.body;
+
+      const tokens = await authService.verifyOTP(email, otp);
+
+      res.json(tokens);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

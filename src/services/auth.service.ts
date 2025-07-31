@@ -9,8 +9,30 @@ import {
 import redis from '../clients/redis.client';
 import { randomUUID } from 'crypto';
 import prisma from '../clients/prisma.client';
+import { generateOTP } from '../utils/otp';
+import { mailTransporter } from '../clients/nodemailer.client';
+import { emailService, userService } from '.';
 
 export class AuthService {
+  private async createSessionAndGenerateTokens(
+    userId: string,
+    sessionId?: string
+  ): Promise<JwtTokens> {
+    if (!sessionId) sessionId = randomUUID();
+
+    const payload: AppJwtPayload = { userId, sessionId };
+    const tokens = generateTokens(payload);
+
+    await redis.set(
+      `refresh:${userId}:${sessionId}`,
+      tokens.refreshToken,
+      'EX',
+      60 * 60 * 24
+    );
+
+    return tokens;
+  }
+
   async login(email: string, password: string): Promise<JwtTokens> {
     const user = await prisma.user.findUnique({
       where: { email },
@@ -20,19 +42,7 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) throw Boom.unauthorized('Invalid email or password');
 
-    const sessionId = randomUUID();
-    const payload: AppJwtPayload = { userId: user.id, sessionId };
-
-    const tokens = generateTokens(payload);
-
-    await redis.set(
-      `refresh:${user.id}:${sessionId}`,
-      tokens.refreshToken,
-      'EX',
-      60 * 60 * 24
-    );
-
-    return tokens;
+    return this.createSessionAndGenerateTokens(user.id);
   }
 
   async refresh(oldRefreshToken: string): Promise<JwtTokens> {
@@ -45,21 +55,7 @@ export class AuthService {
 
     await redis.del(`refresh:${userId}:${sessionId}`);
 
-    const payload: AppJwtPayload = {
-      userId: userId,
-      sessionId: sessionId,
-    };
-
-    const tokens = generateTokens(payload);
-
-    await redis.set(
-      `refresh:${payload.userId}:${payload.sessionId}`,
-      tokens.refreshToken,
-      'EX',
-      60 * 60 * 24
-    );
-
-    return tokens;
+    return this.createSessionAndGenerateTokens(userId, sessionId);
   }
 
   async logout(accessToken: string): Promise<void> {
@@ -68,5 +64,30 @@ export class AuthService {
     await redis.del(`refresh:${userId}:${sessionId}`);
 
     await redis.set(`blacklist:${accessToken}`, 'logout', 'EX', 60 * 60);
+  }
+
+  async loginOTP(email: string): Promise<void> {
+    await userService.getUserByEmail(email);
+
+    const otp = generateOTP();
+
+    await redis.set(`otp:${email}`, otp.toString(), 'EX', 300);
+
+    await emailService.sendEmail({
+      to: email,
+      subject: 'Your OTP Code',
+      text: `Your OTP code is ${otp}. It is valid for 5 minutes.`,
+    });
+  }
+
+  async verifyOTP(email: string, otp: string): Promise<JwtTokens> {
+    const user = await userService.getUserByEmail(email);
+
+    const storedOtp = await redis.get(`otp:${email}`);
+    if (!storedOtp || storedOtp !== otp) throw Boom.unauthorized('Invalid OTP');
+
+    await redis.del(`otp:${email}`);
+
+    return this.createSessionAndGenerateTokens(user!.id);
   }
 }

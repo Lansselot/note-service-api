@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import {
+  loginOTPValidator,
   loginValidator,
   refreshTokenValidator,
   registerValidator,
+  verifyOTPValidator,
 } from '../validators/auth.validator';
 import { validate } from '../middleware/validate.middleware';
 import { authController } from '../controllers';
@@ -19,5 +21,12 @@ router.post(
   authController.refresh
 );
 router.post('/logout', authenticate, authController.logout);
+router.post('/otp', loginOTPValidator, validate, authController.loginOTP);
+router.post(
+  '/otp/verify',
+  verifyOTPValidator,
+  validate,
+  authController.verifyOTP
+);
 
 export default router;

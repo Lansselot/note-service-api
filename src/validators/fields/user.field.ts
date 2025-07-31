@@ -32,3 +32,13 @@ export const passwordValidation = {
       'Password must contain only letters (a-z), numbers (0-9) and special characters',
   },
 };
+
+export const otpValidation = {
+  isString: {
+    errorMessage: 'OTP must be string.',
+  },
+  isLength: {
+    options: { min: 6, max: 6 },
+    errorMessage: 'OTP must be exactly 6 characters long.',
+  },
+};
