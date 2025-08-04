@@ -69,6 +69,12 @@ export class UserService {
   ): Promise<User> {
     const user = await this.getUserById(userId);
 
+    const existingUser = await prisma.user.findUnique({
+      where: { email: newEmail },
+    });
+    if (existingUser)
+      throw Boom.conflict('User with this email already exists');
+
     const isPasswordValid = await bcrypt.compare(password, user!.passwordHash);
     if (!isPasswordValid) throw Boom.unauthorized('Invalid password');
 
