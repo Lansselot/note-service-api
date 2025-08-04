@@ -216,6 +216,28 @@
         }
       }
     },
+    "/api/auth/google": {
+      "get": {
+        "summary": "Redirect to Google for authentication",
+        "description": "Redirects to Google login. Not intended to work via Swagger.",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/auth/google/callback": {
+      "get": {
+        "summary": "Google OAuth2 callback handler",
+        "description": "Handles callback from Google after login. Not intended to work via Swagger.",
+        "tags": ["Auth"],
+        "responses": {
+          "200": {
+            "description": "Authentication successful, returns tokens"
+          },
+          "401": {
+            "description": "Authentication failed"
+          }
+        }
+      }
+    },
     "/api/users": {
       "get": {
         "summary": "Get User by ID",

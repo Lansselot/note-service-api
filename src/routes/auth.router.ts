@@ -8,7 +8,11 @@ import {
 } from '../validators/auth.validator';
 import { validate } from '../middleware/validate.middleware';
 import { authController } from '../controllers';
-import { authenticate } from '../middleware/auth.middleware';
+import {
+  jwtAuthenticate,
+  googleAuthenticate,
+  googleCallbackAuthenticate,
+} from '../middleware/auth.middleware';
 
 const router = Router();
 
@@ -20,13 +24,21 @@ router.post(
   validate,
   authController.refresh
 );
-router.post('/logout', authenticate, authController.logout);
+router.post('/logout', jwtAuthenticate, authController.logout);
 router.post('/otp', loginOTPValidator, validate, authController.loginOTP);
 router.post(
   '/otp/verify',
   verifyOTPValidator,
   validate,
   authController.verifyOTP
+);
+
+router.get('/google', googleAuthenticate, authController.googleCallback);
+
+router.get(
+  '/google/callback',
+  googleCallbackAuthenticate,
+  authController.googleCallback
 );
 
 export default router;

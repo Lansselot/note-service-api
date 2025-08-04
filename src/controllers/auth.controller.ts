@@ -93,4 +93,17 @@ export class AuthController {
       next(error);
     }
   }
+
+  async googleCallback(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const tokens = await authService.googleLogin(req.googleUser!);
+      res.json(tokens);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

@@ -10,8 +10,8 @@ import redis from '../clients/redis.client';
 import { randomUUID } from 'crypto';
 import prisma from '../clients/prisma.client';
 import { generateOTP } from '../utils/otp';
-import { mailTransporter } from '../clients/nodemailer.client';
 import { emailService, userService } from '.';
+import { GoogleUserData } from '../types/passport';
 
 export class AuthService {
   private async createSessionAndGenerateTokens(
@@ -62,8 +62,6 @@ export class AuthService {
     const { userId, sessionId } = verifyAccessToken(accessToken);
 
     await redis.del(`refresh:${userId}:${sessionId}`);
-
-    await redis.set(`blacklist:${accessToken}`, 'logout', 'EX', 60 * 60);
   }
 
   async loginOTP(email: string): Promise<void> {
@@ -87,6 +85,12 @@ export class AuthService {
     if (!storedOtp || storedOtp !== otp) throw Boom.unauthorized('Invalid OTP');
 
     await redis.del(`otp:${email}`);
+
+    return this.createSessionAndGenerateTokens(user!.id);
+  }
+
+  async googleLogin(userData: GoogleUserData): Promise<JwtTokens> {
+    const user = await userService.getUserByEmail(userData.email);
 
     return this.createSessionAndGenerateTokens(user!.id);
   }

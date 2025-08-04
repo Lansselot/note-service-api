@@ -7,38 +7,38 @@ import {
 } from '../validators/user.validator';
 import { validate } from '../middleware/validate.middleware';
 import { userController } from '../controllers';
-import { authenticate } from '../middleware/auth.middleware';
+import { jwtAuthenticate } from '../middleware/auth.middleware';
 
 const router = Router();
 
-router.get('/', authenticate, userController.getUserById);
+router.get('/', jwtAuthenticate, userController.getUserById);
 router.put(
   '/',
   putUserValidator,
   validate,
-  authenticate,
+  jwtAuthenticate,
   userController.updateUser
 );
 router.patch(
   '/',
   patchUserValidator,
   validate,
-  authenticate,
+  jwtAuthenticate,
   userController.updateUser
 );
-router.delete('/', authenticate, userController.deleteUser);
+router.delete('/', jwtAuthenticate, userController.deleteUser);
 router.post(
   '/change-email',
   changeEmailValidator,
   validate,
-  authenticate,
+  jwtAuthenticate,
   userController.changeEmail
 );
 router.post(
   '/change-password',
   changePasswordValidator,
   validate,
-  authenticate,
+  jwtAuthenticate,
   userController.changePassword
 );
 

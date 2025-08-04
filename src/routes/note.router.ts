@@ -8,29 +8,28 @@ import {
 } from '../validators/note.validator';
 import { validate } from '../middleware/validate.middleware';
 import { noteController } from '../controllers';
-import { authenticate } from '../middleware/auth.middleware';
-
+import { jwtAuthenticate } from '../middleware/auth.middleware';
 const router = Router();
 
 router.post(
   '/',
   createNoteValidator,
   validate,
-  authenticate,
+  jwtAuthenticate,
   noteController.createNote
 );
 router.get(
   '/',
   getNoteValidator,
   validate,
-  authenticate,
+  jwtAuthenticate,
   noteController.getAllNotesByUserId
 );
 router.get(
   '/:noteId',
   noteIdValidator,
   validate,
-  authenticate,
+  jwtAuthenticate,
   noteController.getNoteById
 );
 router.put(
@@ -38,7 +37,7 @@ router.put(
   noteIdValidator,
   putNoteValidator,
   validate,
-  authenticate,
+  jwtAuthenticate,
   noteController.updateNote
 );
 router.patch(
@@ -46,14 +45,14 @@ router.patch(
   noteIdValidator,
   patchNoteValidator,
   validate,
-  authenticate,
+  jwtAuthenticate,
   noteController.updateNote
 );
 router.delete(
   '/:noteId',
   noteIdValidator,
   validate,
-  authenticate,
+  jwtAuthenticate,
   noteController.deleteNote
 );
 

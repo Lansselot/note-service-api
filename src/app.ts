@@ -3,10 +3,13 @@ import { authRoutes, noteRoutes, userRoutes } from './routes';
 import { errorHandler } from './middleware/error-handler.middleware';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocs from '../docs/swagger.json';
+import passport from './config/passport/passport';
 
 export const app: Express = express();
 
 app.use(express.json());
+
+app.use(passport.initialize());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
