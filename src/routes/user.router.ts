@@ -12,13 +12,6 @@ import { jwtAuthenticate } from '../middleware/auth.middleware';
 const router = Router();
 
 router.get('/', jwtAuthenticate, userController.getUserById);
-router.put(
-  '/',
-  putUserValidator,
-  validate,
-  jwtAuthenticate,
-  userController.updateUser
-);
 router.patch(
   '/',
   patchUserValidator,
