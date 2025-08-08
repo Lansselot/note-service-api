@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { authService, userService } from '../services';
-import { ChangeEmailDTO, ChangePasswordDTO } from '../types/dto/user.dto';
+import {
+  ChangeEmailDTO,
+  ChangePasswordDTO,
+  UpdateUserDTO,
+} from '../types/dto/user.dto';
 
 export class UserController {
   async getUserById(
@@ -31,7 +35,7 @@ export class UserController {
     try {
       const tokenUserId = req.user!.userId;
 
-      const data = req.body;
+      const data: UpdateUserDTO = req.body;
 
       const updatedUser = await userService.updateUserById(tokenUserId, data);
       res.json({

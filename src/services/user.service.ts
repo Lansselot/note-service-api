@@ -3,14 +3,14 @@ import { User } from '@prisma/client';
 import {
   ChangeEmailDTO,
   ChangePasswordDTO,
-  CreateUserDTO,
   UpdateUserDTO,
 } from '../types/dto/user.dto';
 import Boom from '@hapi/boom';
 import bcrypt from 'bcryptjs';
+import { RegisterUserDTO } from '../types/dto/auth.dto';
 
 export class UserService {
-  async createUser({ name, email, password }: CreateUserDTO): Promise<User> {
+  async createUser({ name, email, password }: RegisterUserDTO): Promise<User> {
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });

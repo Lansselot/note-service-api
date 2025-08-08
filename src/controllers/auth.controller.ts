@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { authService, userService } from '../services';
-import { CreateUserDTO } from '../types/dto/user.dto';
+import {
+  LoginUserDTO,
+  verifyOtpDTO,
+  RegisterUserDTO,
+} from '../types/dto/auth.dto';
 
 export class AuthController {
   async register(
@@ -9,7 +13,7 @@ export class AuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const data: CreateUserDTO = req.body;
+      const data: RegisterUserDTO = req.body;
 
       const newUser = await userService.createUser(data);
       res.status(201).json({
@@ -24,9 +28,9 @@ export class AuthController {
 
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { email, password } = req.body;
+      const data: LoginUserDTO = req.body;
 
-      const tokens = await authService.login(email, password);
+      const tokens = await authService.login(data);
 
       res.json(tokens);
     } catch (error) {
@@ -84,9 +88,9 @@ export class AuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { email, otp } = req.body;
+      const data: verifyOtpDTO = req.body;
 
-      const tokens = await authService.verifyOTP(email, otp);
+      const tokens = await authService.verifyOTP(data);
 
       res.json(tokens);
     } catch (error) {

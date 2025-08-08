@@ -12,6 +12,7 @@ import prisma from '../clients/prisma.client';
 import { generateOTP } from '../utils/otp';
 import { emailService, userService } from '.';
 import { GoogleUserData } from '../types/passport';
+import { LoginUserDTO, verifyOtpDTO } from '../types/dto/auth.dto';
 
 export class AuthService {
   private async createSessionAndGenerateTokens(
@@ -33,7 +34,7 @@ export class AuthService {
     return tokens;
   }
 
-  async login(email: string, password: string): Promise<JwtTokens> {
+  async login({ email, password }: LoginUserDTO): Promise<JwtTokens> {
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -78,7 +79,7 @@ export class AuthService {
     });
   }
 
-  async verifyOTP(email: string, otp: string): Promise<JwtTokens> {
+  async verifyOTP({ email, otp }: verifyOtpDTO): Promise<JwtTokens> {
     const user = await userService.getUserByEmail(email);
 
     const storedOtp = await redis.get(`otp:${email}`);

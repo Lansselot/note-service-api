@@ -83,12 +83,12 @@ export class NoteController {
     try {
       const { noteId } = req.params;
       const tokenUserId = req.user!.userId;
-      const { title, content, isFavorite }: UpdateNoteDTO = req.body;
+      const data: UpdateNoteDTO = req.body;
 
       const updatedNote = await noteService.updateNoteById(
         noteId,
         tokenUserId,
-        { title, content, isFavorite }
+        data
       );
       res.json(updatedNote);
     } catch (error) {
