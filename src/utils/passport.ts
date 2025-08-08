@@ -14,8 +14,6 @@ export function createPassportAuthMiddleware(
       strategy,
       { ...options },
       (err: any, user: AppJwtPayload | undefined, info: any) => {
-        console.log('auth', strategy, err, user, { ...options });
-
         if (err || !user)
           return next(Boom.unauthorized('Invalid access token'));
 

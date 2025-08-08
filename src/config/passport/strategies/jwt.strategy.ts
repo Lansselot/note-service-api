@@ -15,7 +15,6 @@ export const jwtStrategy = new JwtStrategy(
     try {
       const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
       req.accessToken = token as string;
-      console.log('auth jwtstrategy', JSON.stringify(jwt_payload));
       return done(null, jwt_payload);
     } catch (err) {
       return done(err, false);
