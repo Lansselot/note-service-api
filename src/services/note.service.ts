@@ -32,13 +32,14 @@ export class NoteService {
     limit = 10,
     offset = 0,
     sortOrder = SortOrder.DESC,
+    isFavorite = undefined,
   }: GetNotesDTO): Promise<Note[] | null> {
     await userService.getUserById(userId);
 
     return prisma.note.findMany({
       skip: offset,
       take: limit,
-      where: { userId },
+      where: { userId, isFavorite },
       orderBy: { createdAt: sortOrder },
     });
   }
@@ -46,7 +47,7 @@ export class NoteService {
   async updateNoteById(
     noteId: string,
     userId: string,
-    { title, content }: UpdateNoteDTO
+    { title, content, isFavorite }: UpdateNoteDTO
   ): Promise<Note | null> {
     const note = await this.getNoteById(noteId, userId);
 
@@ -54,7 +55,7 @@ export class NoteService {
 
     return prisma.note.update({
       where: { id: noteId },
-      data: { title, content },
+      data: { title, content, isFavorite },
     });
   }
 

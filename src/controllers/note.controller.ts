@@ -35,13 +35,19 @@ export class NoteController {
   ): Promise<void> {
     try {
       const tokenUserId = req.user!.userId;
-      const { offset, limit, order } = req.query;
+      const { offset, limit, order, isFavorite } = req.query;
+
+      let isFavoriteParsed: boolean | undefined;
+      if (isFavorite === 'true') isFavoriteParsed = true;
+      else if (isFavorite === 'false') isFavoriteParsed = false;
+      else if (typeof isFavorite === 'undefined') isFavoriteParsed = undefined;
 
       const options: GetNotesDTO = {
         userId: tokenUserId as string,
         offset: offset ? parseInt(offset as string) : undefined,
         limit: limit ? parseInt(limit as string) : undefined,
         sortOrder: order as SortOrder,
+        isFavorite: isFavoriteParsed,
       };
 
       const notes = await noteService.getAllNotesByUserId(options);
@@ -77,12 +83,12 @@ export class NoteController {
     try {
       const { noteId } = req.params;
       const tokenUserId = req.user!.userId;
-      const data: UpdateNoteDTO = req.body;
+      const { title, content, isFavorite }: UpdateNoteDTO = req.body;
 
       const updatedNote = await noteService.updateNoteById(
         noteId,
         tokenUserId,
-        data
+        { title, content, isFavorite }
       );
       res.json(updatedNote);
     } catch (error) {

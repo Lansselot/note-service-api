@@ -1,3 +1,5 @@
+import { Location } from 'express-validator';
+
 export const titleValidation = {
   isString: {
     errorMessage: 'Title must be string.',
@@ -20,4 +22,16 @@ export const contentValidation = {
     options: { max: 65536 },
     errorMessage: 'Content too long',
   },
+};
+
+export const isFavoriteValidation = {
+  custom: {
+    options: (value: any) => {
+      if (typeof value !== 'boolean') {
+        throw new Error('isFavorite must be a boolean.');
+      }
+      return true;
+    },
+  },
+  optional: true,
 };

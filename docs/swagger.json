@@ -252,39 +252,6 @@
           }
         }
       },
-      "put": {
-        "summary": "Update User by ID",
-        "tags": ["Users"],
-        "security": [{ "BearerAuth": [] }],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["name"],
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "example": "new_name"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User updated successfully"
-          },
-          "400": {
-            "description": "Validation failed"
-          },
-          "401": {
-            "description": "Invalid access token"
-          }
-        }
-      },
       "patch": {
         "summary": "Update User by ID",
         "tags": ["Users"],
@@ -418,6 +385,47 @@
         "summary": "Get all Notes by User ID",
         "tags": ["Notes"],
         "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of items to skip (for pagination)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of items to return (for pagination)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort order: 'asc' or 'desc'",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"]
+            }
+          },
+          {
+            "name": "isFavorite",
+            "in": "query",
+            "description": "Filter by favorite status",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Notes retrieved successfully"
@@ -521,6 +529,10 @@
                   "content": {
                     "type": "string",
                     "example": "New content"
+                  },
+                  "isFavorite": {
+                    "type": "boolean",
+                    "example": true
                   }
                 }
               }
@@ -570,6 +582,10 @@
                   "content": {
                     "type": "string",
                     "example": "New content"
+                  },
+                  "isFavorite": {
+                    "type": "boolean",
+                    "example": true
                   }
                 }
               }

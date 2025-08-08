@@ -32,3 +32,11 @@ export const orderValidation = {
   toLowerCase: true,
   optional: true,
 };
+
+export const isFavoriteQueryValidation = {
+  in: ['query'] as Location[],
+  isBoolean: {
+    errorMessage: 'isFavorite must be boolean.',
+  },
+  optional: true,
+};

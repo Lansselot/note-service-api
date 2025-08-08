@@ -1,8 +1,12 @@
 import { checkSchema } from 'express-validator';
-import { contentValidation, titleValidation } from './fields/note.field';
-import { idValidation } from './fields/common.field';
-import { off } from 'process';
 import {
+  contentValidation,
+  isFavoriteValidation,
+  titleValidation,
+} from './fields/note.field';
+import { idValidation } from './fields/common.field';
+import {
+  isFavoriteQueryValidation,
   limitValidation,
   offsetValidation,
   orderValidation,
@@ -17,15 +21,21 @@ export const noteIdValidator = checkSchema({
   noteId: idValidation,
 });
 
-export const putNoteValidator = createNoteValidator;
+export const putNoteValidator = checkSchema({
+  title: titleValidation,
+  content: contentValidation,
+  isFavorite: isFavoriteValidation,
+});
 
 export const patchNoteValidator = checkSchema({
   title: { ...titleValidation, optional: true },
   content: { ...contentValidation, optional: true },
+  isFavorite: { ...isFavoriteValidation, optional: true },
 });
 
 export const getNoteValidator = checkSchema({
   offset: offsetValidation,
   limit: limitValidation,
   order: orderValidation,
+  isFavorite: isFavoriteQueryValidation,
 });
