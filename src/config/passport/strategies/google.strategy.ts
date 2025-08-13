@@ -1,5 +1,6 @@
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import dotenv from 'dotenv';
+import { AppJwtPayload } from '../../../types/jwt';
 
 dotenv.config({ quiet: true });
 
@@ -18,7 +19,7 @@ export const googleStrategy = new GoogleStrategy(
         googleId: profile.id,
       };
 
-      return done(null, {});
+      return done(null, {} as AppJwtPayload);
     } catch (error) {
       return done(error, false);
     }

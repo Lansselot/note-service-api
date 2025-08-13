@@ -3,8 +3,8 @@ import { GoogleUserData } from './passport';
 
 declare global {
   namespace Express {
+    interface User extends AppJwtPayload {}
     interface Request {
-      user?: AppJwtPayload;
       accessToken?: string;
       googleUser?: GoogleUserData;
     }
