@@ -6,6 +6,6 @@ import { googleStrategy } from './strategies/google.strategy';
 dotenv.config({ quiet: true });
 
 passport.use('jwt', jwtStrategy);
-passport.use('google', googleStrategy);
+if (googleStrategy) passport.use('google', googleStrategy);
 
 export default passport;
