@@ -12,8 +12,9 @@
     "migration:create": "prisma migrate dev --create-only",
     "migrate": "prisma migrate deploy",
     "start:migrate": "prisma migrate deploy && yarn start",
-    "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down"
+    "docker:up": "docker compose up --build -d ",
+    "docker:down": "docker compose down",
+    "docker:restart": "docker compose down && docker compose up --build -d"
   },
   "repository": "https://github.com/Lansselot/note-service-api",
   "author": "lansselot <pozharov2003@gmail.com>",

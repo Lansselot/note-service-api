@@ -7,11 +7,16 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+      - '${POSTGRES_PORT}:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - note-service
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
   redis:
     container_name: redis
     image: redis:latest
@@ -28,20 +33,23 @@ services:
       - redis-server --requirepass '${REDIS_PASSWORD}'
     networks:
       - note-service
+  app:
+    container_name: note_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '${PORT}:${PORT}'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - note-service
+    volumes:
+      - .:/dist
 
-  # app:
-  #   container_name: note_app
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - '3000:3000'
-  #   depends_on:
-  #     - postgres
-  #   networks:
-  #     - note-service
-  #   volumes:
-  #     - .:/dist
 volumes:
   postgres_data:
 
